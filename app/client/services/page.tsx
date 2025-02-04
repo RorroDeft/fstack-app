@@ -1,36 +1,36 @@
 "use client";
 import { categories } from "@/data/categories";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import CategoryFilter from "../components/CategoryFilter";
 import { services } from "@/data/services";
 import ServiceCard from "../components/ServiceCard";
 import QuoteButton from "../components/QuoteButton";
+import { useQuote } from "../../context/QuoteContext";
 
 export default function ServicesPage() {
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [quoteServices, setQuoteServices] = useState<string[]>([]);
+  const [activeCategory, setActiveCategory] = useState<string>("all"); // 🔹 Cambié null → "all"
+  const { cart } = useQuote();
 
   useEffect(() => {
-    const storedCategory = localStorage.getItem("selectedCategory");
-    if (storedCategory) {
+    if (typeof window !== "undefined") {
+      const storedCategory = localStorage.getItem("selectedCategory") || "all";
       setActiveCategory(storedCategory);
     }
-
-    const storedServices = JSON.parse(
-      localStorage.getItem("quoteServices") || "[]"
-    );
-    setQuoteServices(storedServices);
   }, []);
 
   const handleCategoryChange = (category: string) => {
     setActiveCategory(category);
-    localStorage.setItem("selectedCategory", category);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selectedCategory", category);
+    }
   };
 
-  const filteredCategories =
-    activeCategory === "all"
+  // ✅ `useMemo` SIEMPRE se ejecuta en el mismo orden
+  const filteredCategories = useMemo(() => {
+    return activeCategory === "all"
       ? categories
       : categories.filter((cat) => cat.id === activeCategory);
+  }, [activeCategory]);
 
   return (
     <div className="relative flex flex-col md:flex-row gap-8 px-4 md:px-8 lg:px-16 min-h-screen">
@@ -52,7 +52,7 @@ export default function ServicesPage() {
 
       {/* 📌 Catálogo de Servicios */}
       <section className="flex-1 pb-24">
-        {/* ✅ Nuevo botón "Ver Cotización" en la parte superior derecha */}
+        {/* ✅ Botón "Ver Cotización" fijo en la parte superior derecha */}
         <div className="quote-button mt-16 md:mt-0">
           <QuoteButton />
         </div>
@@ -63,21 +63,14 @@ export default function ServicesPage() {
               {category.name}
             </h3>
 
-            <div
-              className="grid gap-6"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-                gap: "1.5rem",
-              }}
-            >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {services
                 .filter((service) => service.category === category.id)
                 .map((service) => (
                   <ServiceCard
                     key={service.id}
                     service={service}
-                    addedToQuote={quoteServices.includes(service.id)}
+                    addedToQuote={cart.some((s) => s.id === service.id)}
                   />
                 ))}
             </div>

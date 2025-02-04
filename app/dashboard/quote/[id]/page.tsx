@@ -189,6 +189,7 @@ export default function QuoteDetailsPage() {
 
   if (loading) return <p>Cargando detalles...</p>;
 
+  console.log(quote)
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Detalles de la Cotización</h2>

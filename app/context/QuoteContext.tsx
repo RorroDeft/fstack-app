@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 interface Service {
   id: string;
@@ -12,8 +12,26 @@ interface Service {
 const QuoteContext = createContext<any>(null);
 
 export function QuoteProvider({ children }: { children: React.ReactNode }) {
-  const [cart, setCart] = useState<Service[]>([]);
+  const [cart, setCart] = useState<Service[]>([]); // ⬅ Inicializamos vacío
 
+  // ✅ Cargar servicios desde `localStorage` SOLO en el cliente (para evitar errores de hidratación)
+  useEffect(() => {
+    const storedServices = localStorage.getItem("quoteServices");
+    if (storedServices) {
+      setCart(JSON.parse(storedServices));
+    }
+  }, []);
+
+  // ✅ Guardar en `localStorage` cuando cambia el carrito
+  useEffect(() => {
+    if (cart.length > 0) {
+      localStorage.setItem("quoteServices", JSON.stringify(cart));
+    } else {
+      localStorage.removeItem("quoteServices"); // Limpia el `localStorage` si está vacío
+    }
+  }, [cart]);
+
+  // ✅ Agregar servicio a la cotización (sin duplicados)
   const addToQuote = (service: Service) => {
     setCart((prevCart) => {
       if (!prevCart.some((s) => s.id === service.id)) {
@@ -23,8 +41,20 @@ export function QuoteProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  // ✅ Eliminar servicio de la cotización
+  const removeFromQuote = (serviceId: string) => {
+    setCart((prevCart) => prevCart.filter((s) => s.id !== serviceId));
+  };
+
+  // ✅ Vaciar toda la cotizabase_priceción
+  const clearQuote = () => {
+    setCart([]);
+  };
+
   return (
-    <QuoteContext.Provider value={{ cart, addToQuote }}>
+    <QuoteContext.Provider
+      value={{ cart, addToQuote, removeFromQuote, clearQuote }}
+    >
       {children}
     </QuoteContext.Provider>
   );
