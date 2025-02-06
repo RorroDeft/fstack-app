@@ -1,21 +1,33 @@
-"use client";
+"use client"
 import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react"; // ✅ Importamos React hooks
 import { services } from "@/data/services";
 import { useQuote } from "../../../context/QuoteContext";
 
 export default function ServiceDetailsPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const [id, setId] = useState(""); // ✅ Estado para manejar `id` dinámico
   const router = useRouter();
   const { cart, addToQuote } = useQuote();
 
+  useEffect(() => {
+    if (params?.id) {
+      setId(params.id); // ✅ Se asegura de que `id` esté disponible antes de renderizar
+    }
+  }, [params]);
+
+  if (!id) return null; // ✅ Evita renderizar antes de que `id` esté listo
+
+  // ✅ Buscar el servicio en la base de datos
   const service = services.find((s) => s.id === id);
   if (!service) return <p>Servicio no encontrado.</p>;
 
+  // ✅ Verificar si el servicio ya está en la cotización
   const isAdded = cart.some((s) => s.id === id);
 
   const handleAddToQuote = () => {
     if (!isAdded) {
-      addToQuote(service);
+      addToQuote(service.id); // 🔥 Pasamos solo `id`
     }
   };
 

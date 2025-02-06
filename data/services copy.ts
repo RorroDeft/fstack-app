@@ -15,7 +15,7 @@ export const services = [
         "/images/mazda3-2025/interior-2.jpg",
       ],
     },
-    exclusiveCategory: ["default"],
+    exclusiveCategory: ["mazda", "mazda-3-2025"],
     base_price: 149000,
     adjusted_price: 0,
     quantity: 1,
