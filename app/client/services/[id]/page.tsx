@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react"; // ✅ Importamos React hooks
 import { services } from "@/data/services";
@@ -60,7 +60,10 @@ export default function ServiceDetailsPage() {
       </div>
 
       {/* Descripción */}
-      <p className="text-lg mb-6">{service.description}</p>
+      <div
+        className="text-lg mb-6"
+        dangerouslySetInnerHTML={{ __html: service.description }}
+      ></div>
 
       {/* Galería de Imágenes */}
       <div className="mb-6">

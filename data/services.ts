@@ -1,149 +1,225 @@
 export const services = [
-  // 🏆 Servicio Exclusivo por Marca y Modelo (Mazda 3 2025)
   {
-    id: "kit-interior",
-    name: "Kit Interior",
-    description: "Protege el interior de tu auto con PPF.",
+    id: "interior-001",
+    name: "Interior Perfecto: Protección PPF Premium",
+    shortDescription:
+      "Preserva la elegancia y el acabado de las superficies internas de tu vehículo.",
+    description: `
+    <p>
+      Descubre la excelencia en protección interior con nuestro servicio 
+      <strong>Interior Perfecto: Protección PPF Premium</strong>. Este tratamiento exclusivo ofrece una capa de PPF que preserva la belleza y funcionalidad de las superficies más delicadas de tu vehículo.
+    </p>
+  
+    <p><strong>Superficies que se pueden proteger con PPF:</strong></p>
+    <ul style="list-style-type: disc; margin-left: 20px;">
+      <li>Piano Black</li>
+      <li>Pantallas</li>
+      <li>Fibra de carbono</li>
+      <li>Pintura</li>
+    </ul>
+  
+    <br/>
+  
+    <p><strong>Proceso previo a la instalación:</strong></p>
+    <ul style="list-style-type: disc; margin-left: 20px;">
+      <li>Inspección detallada de cada superficie para evaluar su estado.</li>
+      <li>Limpieza profunda y preparación meticulosa para asegurar la máxima adherencia del PPF.</li>
+      <li>Verificación de condiciones óptimas para garantizar un acabado perfecto.</li>
+    </ul>
+      <br/>
+    <p><strong>Tiempo de trabajo:</strong> Aproximadamente 4 horas, dedicadas a una aplicación cuidadosa y precisa.</p>
+  `,
     category: "interior",
     defaultGallery: [
       "/images/default/interior-1.jpg",
       "/images/default/interior-2.jpg",
     ],
-    specificGallery: {
-      "mazda-3-2025": [
-        "/images/mazda3-2025/interior-1.jpg",
-        "/images/mazda3-2025/interior-2.jpg",
-      ],
-    },
     exclusiveCategory: ["default"],
     base_price: 149000,
     adjusted_price: 0,
     quantity: 1,
     size_price: {
-      Sedan: 149000,
-      SUV: 165000,
-      "SUV Grande": 185000,
+      "Sedan/Hatchback": 149000,
+      SUV: 149000,
+      "SUV Grande": 149000,
+      "Coupé/Deportivo": 149000,
+      "Pickup/XL": 149000,
     },
     video: "https://www.youtube.com/embed/HsiwVTwisYo",
   },
-
-  // 🎯 Servicio Exclusivo para Autos 2025
   {
-    id: "kit-proteccion-2025",
-    name: "Kit Full Protección",
-    description: "Protege tu auto desde el primer momento con cerámico + PPF.",
+    id: "exterior-001",
+    name: "PPF: Protección para Fondos de Manilla",
+    shortDescription:
+      "Protege la base de las manillas con PPF, evitando rayones y desgaste.",
+    description:
+      "Con PPF: Protección para Fondos de Manilla aplicamos un recubrimiento PPF de alta calidad en la zona de los fondos de manilla. Este tratamiento crea una barrera invisible que protege contra rayones, suciedad y el desgaste diario, asegurando que el acabado de tu vehículo se mantenga impecable. Aprovecha la tecnología PPF que ya conoces para prolongar la vida de cada detalle.",
+    category: "exterior",
+    defaultGallery: [
+      "/images/default/interior-1.jpg",
+      "/images/default/interior-2.jpg",
+    ],
+    exclusiveCategory: ["default"],
+    base_price: 8000,
+    adjusted_price: 0,
+    quantity: 1,
+    size_price: {
+      "Sedan/Hatchback": 8000,
+      SUV: 8000,
+      "SUV Grande": 8000,
+      "Coupé/Deportivo": 8000,
+      "Pickup/XL": 8000,
+    },
+    video: "https://www.youtube.com/embed/HsiwVTwisYo",
+  },
+  {
+    id: "exterior-002",
+    name: "PPF: Defensa para Bordes de Puertas",
+    shortDescription:
+      "Protege los bordes de las puertas con un recubrimiento PPF especializado.",
+    description:
+      "Con PPF: Defensa para Bordes de Puertas ofrecemos un tratamiento de recubrimiento PPF que actúa como un escudo protector en las zonas críticas de los bordes de las puertas. Este servicio minimiza la aparición de rayones, golpes y desgaste, manteniendo la estética y el valor de tu vehículo. Disfruta de una protección duradera y de un acabado siempre impecable.",
+    category: "exterior",
+    defaultGallery: [
+      "/images/default/interior-1.jpg",
+      "/images/default/interior-2.jpg",
+    ],
+    exclusiveCategory: ["default"],
+    base_price: 8000,
+    adjusted_price: 0,
+    quantity: 1,
+    size_price: {
+      "Sedan/Hatchback": 8000,
+      SUV: 8000,
+      "SUV Grande": 8000,
+      "Coupé/Deportivo": 8000,
+      "Pickup/XL": 8000,
+    },
+    video: "https://www.youtube.com/embed/HsiwVTwisYo",
+  },
+  {
+    id: "exterior-003",
+    name: "PPF: Escudo para Focos",
+    shortDescription:
+      "Resguarda tus faros y focos con la protección PPF, evitando daños y deterioro.",
+    description:
+      "El servicio PPF: Escudo para Focos consiste en la aplicación de un recubrimiento PPF sobre tus faros y focos. Esta capa protectora combate impactos, rayones y la exposición a elementos ambientales, garantizando que la claridad y funcionalidad de la iluminación se mantenga intacta. Protege uno de los elementos clave para la seguridad y el estilo de tu vehículo.",
+    category: "exterior",
+    defaultGallery: [
+      "/images/default/interior-1.jpg",
+      "/images/default/interior-2.jpg",
+    ],
+    exclusiveCategory: ["default"],
+    base_price: 45000,
+    adjusted_price: 0,
+    quantity: 1,
+    size_price: {
+      "Sedan/Hatchback": 45000,
+      SUV: 45000,
+      "SUV Grande": 45000,
+      "Coupé/Deportivo": 45000,
+      "Pickup/XL": 45000,
+    },
+    video: "https://www.youtube.com/embed/HsiwVTwisYo",
+  },
+  {
+    id: "exterior-004",
+    name: "PPF: Blindaje para Espejos Retrovisores",
+    shortDescription:
+      "Protege tus espejos retrovisores aplicando un recubrimiento PPF contra rayones y desgaste.",
+    description:
+      "Con PPF: Blindaje para Espejos Retrovisores aplicamos un recubrimiento PPF especialmente diseñado para los espejos retrovisores de tu vehículo. Este tratamiento crea una barrera resistente que reduce el riesgo de rayones, golpes y deterioro por factores ambientales, manteniendo la funcionalidad y la estética premium de tus espejos.",
+    category: "exterior",
+    defaultGallery: [
+      "/images/default/interior-1.jpg",
+      "/images/default/interior-2.jpg",
+    ],
+    exclusiveCategory: ["default"],
+    base_price: 45000,
+    adjusted_price: 0,
+    quantity: 1,
+    size_price: {
+      "Sedan/Hatchback": 45000,
+      SUV: 45000,
+      "SUV Grande": 45000,
+      "Coupé/Deportivo": 45000,
+      "Pickup/XL": 45000,
+    },
+    video: "https://www.youtube.com/embed/HsiwVTwisYo",
+  },
+  {
+    id: "exterior-005",
+    name: "PPF: Protección Selectiva para Piezas",
+    shortDescription:
+      "Aplicación de PPF en áreas específicas que requieren un cuidado extra.",
+    description:
+      "El servicio PPF: Protección Selectiva para Piezas te permite elegir las áreas críticas de tu vehículo que necesitan una protección adicional. Mediante la aplicación puntual de PPF, creamos barreras protectoras en las zonas que más lo requieren, previniendo rayones, suciedad y desgaste. Es la opción ideal para personalizar el cuidado de tu automóvil y mantenerlo en condiciones óptimas.",
+    category: "exterior",
+    defaultGallery: [
+      "/images/default/interior-1.jpg",
+      "/images/default/interior-2.jpg",
+    ],
+    exclusiveCategory: ["default"],
+    base_price: 400000,
+    adjusted_price: 0,
+    quantity: 1,
+    size_price: {
+      "Sedan/Hatchback": 400000,
+      SUV: 400000,
+      "SUV Grande": 400000,
+      "Coupé/Deportivo": 400000,
+      "Pickup/XL": 400000,
+    },
+    video: "https://www.youtube.com/embed/HsiwVTwisYo",
+  },
+  {
+    id: "exclusivos-2025-001",
+    name: "Protección Total para tu 2025",
+    shortDescription:
+      "Un escudo integral que resguarda cada superficie de tu vehículo, manteniéndolo impecable.",
+    description:
+      "Con Protección Total para tu 2025 transformamos tu automóvil en un verdadero fortín contra el desgaste. Utilizamos la tecnología de recubrimiento más avanzada para generar una barrera resistente que protege la carrocería, la pintura y cada detalle contra arañazos, contaminantes y el deterioro diario. Esta solución integral garantiza un acabado duradero y un mantenimiento sencillo, para que tu inversión se conserve en perfecto estado.",
     category: "exclusive-2025",
     defaultGallery: [
-      "/images/default/proteccion-1.jpg",
-      "/images/default/proteccion-2.jpg",
-    ],
-    exclusiveCategory: ["exclusivo-2025"],
-    base_price: 399000,
-    adjusted_price: 0,
-    quantity: 1,
-    size_price: {
-      Sedan: 379000,
-      SUV: 449000,
-      "SUV Grande": 499000,
-    },
-    video: "https://www.youtube.com/embed/proteccion2025",
-  },
-
-  // 🚗 Servicio General (Todos los autos)
-  {
-    id: "tratamiento-ceramico",
-    name: "Tratamiento Cerámico",
-    description: "Protección para la pintura de tu auto.",
-    category: "recommended",
-    defaultGallery: [
-      "/images/default/ceramic-1.jpg",
-      "/images/default/ceramic-2.jpg",
+      "/images/default/interior-1.jpg",
+      "/images/default/interior-2.jpg",
     ],
     exclusiveCategory: ["default"],
-    base_price: 290000,
+    base_price: 149000,
     adjusted_price: 0,
     quantity: 1,
     size_price: {
-      Sedan: 270000,
-      SUV: 350000,
-      "SUV Grande": 399000,
+      "Sedan/Hatchback": 149000,
+      SUV: 149000,
+      "SUV Grande": 149000,
+      "Coupé/Deportivo": 149000,
+      "Pickup/XL": 149000,
     },
-    video: "https://www.youtube.com/embed/ceramicVideo",
+    video: "https://www.youtube.com/embed/HsiwVTwisYo",
   },
-
-  // 🔹 Servicio para Alta Gama
   {
-    id: "kit-ppf-fullfront",
-    name: "Kit PPF Full Front",
-    description: "Protección total para la parte delantera del auto.",
+    id: "recomendacion-001",
+    name: "Revive el Brillo de tu 2025",
+    shortDescription:
+      "Devuelve la vitalidad a la pintura de tu automóvil y protégela de futuros daños.",
+    description:
+      "Con Revive el Brillo de tu 2025 le damos a tu vehículo una segunda oportunidad para lucir como nuevo. Este servicio está diseñado para restaurar la vitalidad y el acabado original de la pintura, eliminando imperfecciones y signos de desgaste. Además, se forma una capa protectora que minimiza el deterioro por factores ambientales, asegurando que el esplendor y la belleza de tu automóvil perduren a lo largo del tiempo.",
     category: "recommended",
     defaultGallery: [
-      "/images/default/ppf-fullfront-1.jpg",
-      "/images/default/ppf-fullfront-2.jpg",
+      "/images/default/interior-1.jpg",
+      "/images/default/interior-2.jpg",
     ],
-    exclusiveCategory: ["alta-gama"],
-    base_price: 790000,
-    adjusted_price: 0,
-    quantity: 1,
-    size_price: {
-      "Coupe/Deportivo": 850000,
-      "SUV Grande": 899000,
-    },
-    video: "https://www.youtube.com/embed/ppffullfront",
-  },
-
-  // 🏆 Servicio Exclusivo para Porsche Macan 2020
-  {
-    id: "proteccion-macan-2020",
-    name: "Protección Exclusiva Macan",
-    description: "Servicio de protección especial para Porsche Macan.",
-    category: "recommended",
-    defaultGallery: [
-      "/images/default/macan-1.jpg",
-      "/images/default/macan-2.jpg",
-    ],
-    exclusiveCategory: ["porsche", "porsche-macan-2020"],
-    base_price: 499000,
-    adjusted_price: 0,
-    quantity: 1,
-    size_price: {
-      "Coupe/Deportivo": 550000,
-      SUV: 570000,
-      "SUV Grande": 599000,
-    },
-    video: "https://www.youtube.com/embed/macanVideo",
-  },
-
-  // 🚙 Servicio para SUVs en General
-  {
-    id: "proteccion-suv",
-    name: "Protección para SUVs",
-    description: "Servicio recomendado para vehículos tipo SUV.",
-    category: "recommended",
-    defaultGallery: ["/images/default/suv-1.jpg", "/images/default/suv-2.jpg"],
     exclusiveCategory: ["default"],
-    base_price: 320000,
+    base_price: 149000,
     adjusted_price: 0,
     quantity: 1,
     size_price: {
-      SUV: 350000,
-      "SUV Grande": 399000,
+      "Sedan/Hatchback": 149000,
+      SUV: 149000,
+      "SUV Grande": 149000,
+      "Coupé/Deportivo": 149000,
+      "Pickup/XL": 149000,
     },
-    video: "https://www.youtube.com/embed/suvProtection",
-  },  {
-    id: "proteccion-suv",
-    name: "Protección para SUVs",
-    description: "Servicio recomendado para vehículos tipo SUV.",
-    category: "interior",
-    defaultGallery: ["/images/default/suv-1.jpg", "/images/default/suv-2.jpg"],
-    exclusiveCategory: ["default"],
-    base_price: 320000,
-    adjusted_price: 0,
-    quantity: 1,
-    size_price: {
-      SUV: 350000,
-      "SUV Grande": 399000,
-    },
-    video: "https://www.youtube.com/embed/suvProtection",
-  }
+    video: "https://www.youtube.com/embed/HsiwVTwisYo",
+  },
 ];
