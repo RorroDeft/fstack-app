@@ -46,7 +46,10 @@ export function QuoteProvider({ children }: { children: React.ReactNode }) {
   // ✅ Función para obtener el precio correcto según el vehículo
   const getPriceForVehicle = (serviceId: string) => {
     const vehicle = getVehicleData();
+    console.log(vehicle);
     const service = services.find((s) => s.id === serviceId);
+    console.log(vehicle);
+    console.log(service);
     if (!service) return 0;
 
     // Si el servicio tiene precios por tamaño de auto
@@ -69,7 +72,7 @@ export function QuoteProvider({ children }: { children: React.ReactNode }) {
       name: service.name,
       base_price: price,
       adjusted_price: 0, // 🔥 Se mantiene en `0` hasta que el vendedor lo modifique
-      quantity: 1, // 🔢 Cantidad inicial por defecto
+      quantity: service.quantity, // 🔢 Cantidad inicial por defecto
       image: service.defaultGallery?.[0] || "", // ✅ Primera imagen como preview
     };
 

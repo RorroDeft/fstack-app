@@ -23,12 +23,14 @@ export default function VehicleFormPage() {
     phone: false,
     year: false,
   });
-
+  
   const vehicleTypes = [
     "Sedan/Hatchback",
     "SUV",
-    "Pickup/3 Corridas de Asientos",
+    "Pickup / 3 Corridas de asientos",
+    "Pickup XL",
     "Musclecar",
+    "Coupé/Deportivo",
   ];
 
   useEffect(() => {

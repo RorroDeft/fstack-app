@@ -21,6 +21,7 @@ export default function QuoteDetailsPage() {
 
         if (docSnap.exists()) {
           const data = docSnap.data();
+          console.log(data)
           setQuote(data);
           setNote(data.note || "");
           setGlobalDiscount(data.global_discount || 0);
