@@ -8,6 +8,16 @@ export default function SummaryPage() {
   const router = useRouter();
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false); // 🔄 Estado del Loader
+  const [vehicleData, setVehicleData] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedVehicleData = localStorage.getItem("vehicleFormData");
+      if (storedVehicleData) {
+        setVehicleData(JSON.parse(storedVehicleData));
+      }
+    }
+  }, []);
 
   // ✅ Calcular el total de la cotización al cargar la página
   useEffect(() => {
@@ -26,13 +36,59 @@ export default function SummaryPage() {
   }, [cart, router, loading]);
 
   // ✅ Maneja la selección de una opción
-  const handleOptionSelect = () => {
+  const handleOptionSelect = async () => {
     setLoading(true); // ⏳ Activa el Loader
 
-    setTimeout(() => {
-      clearQuote(); // 🔥 Borra la cotización
-      router.push("/client/confirmation"); // 🔄 Redirige a la confirmación
-    }, 2000); // ⏳ Simula un pequeño retraso para UX
+    // 📌 Estructurar la cotización para enviarla a la API
+    const quoteData = {
+      customer_info: {
+        brand: vehicleData.brand,
+        model: vehicleData.model,
+        year: vehicleData.year,
+        name: vehicleData.name,
+        phone: vehicleData.phone,
+        email: vehicleData.email,
+        vehicleType: vehicleData.vehicleType
+      },
+      services: cart.map((service) => ({
+        id: service.id,
+        name: service.name,
+        base_price: service.base_price,
+        adjusted_price: service.base_price,
+        quantity: service.quantity,
+      })),
+      global_discount: 0, // Se puede ajustar en el futuro
+      note: "", // Opcional
+      status: "pending", // 🔥 Inicialmente "pendiente"
+    };
+    console.log(quoteData);
+
+    try {
+      const response = await fetch("/api/saveQuote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(quoteData),
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (data.success) {
+        console.log("✅ Cotización guardada con ID:", data.id);
+
+        setTimeout(() => {
+          clearQuote(); // 🔥 Borra la cotización del contexto
+          router.push("/client/confirmation"); // 🔄 Redirige a la confirmación
+        }, 2000); // ⏳ Mantiene el retraso para UX
+      } else {
+        console.error("❌ Error al guardar la cotización:", data.error);
+        alert("Hubo un problema al guardar la cotización. Inténtalo de nuevo.");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("❌ Error en la solicitud:", error);
+      alert("Hubo un error al procesar la cotización.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -55,19 +111,29 @@ export default function SummaryPage() {
             {/* ✅ Mobile → Tarjetas individuales */}
             <div className="space-y-4">
               {cart.map((service) => (
-                <div key={service.id} className="bg-gray-700 p-4 rounded-lg shadow">
+                <div
+                  key={service.id}
+                  className="bg-gray-700 p-4 rounded-lg shadow"
+                >
                   <h3 className="text-lg font-bold">{service.name}</h3>
                   <p className="text-sm text-gray-300">
-                    Cantidad: <span className="font-semibold">{service.quantity}</span>
+                    Cantidad:{" "}
+                    <span className="font-semibold">{service.quantity}</span>
                   </p>
                   <p className="text-sm text-gray-300">
-                    Precio Unitario: <span className="font-semibold">
+                    Precio Unitario:{" "}
+                    <span className="font-semibold">
                       ${service.base_price.toLocaleString("es-CL")} +IVA
                     </span>
                   </p>
                   <p className="text-sm text-gray-300">
-                    Subtotal: <span className="font-semibold">
-                      ${(service.base_price * service.quantity).toLocaleString("es-CL")} +IVA
+                    Subtotal:{" "}
+                    <span className="font-semibold">
+                      $
+                      {(service.base_price * service.quantity).toLocaleString(
+                        "es-CL"
+                      )}{" "}
+                      +IVA
                     </span>
                   </p>
                 </div>
@@ -79,12 +145,14 @@ export default function SummaryPage() {
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-6 w-full max-w-lg">
             <h2 className="text-xl font-semibold mb-4">Total estimado</h2>
             <p className="text-lg">
-              Subtotal: <span className="font-bold">
+              Subtotal:{" "}
+              <span className="font-bold">
                 ${total.toLocaleString("es-CL")} +IVA
               </span>
             </p>
             <p className="text-lg mt-2">
-              Total con IVA (~19%): <span className="font-bold">
+              Total con IVA (~19%):{" "}
+              <span className="font-bold">
                 ${(total * 1.19).toLocaleString("es-CL")}
               </span>
             </p>
