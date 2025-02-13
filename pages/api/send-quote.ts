@@ -3,6 +3,7 @@ import { generatePdf } from "../../utils/generatePdf";
 import { sendEmailWithQuote } from "../../utils/sendEmail";
 import { db } from "../../firebase/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+import { getNextCotizacionNumber } from "../../utils/quotesCounter";
 
 export default async function handler(
   req: NextApiRequest,
@@ -24,7 +25,14 @@ export default async function handler(
     }
 
     const quoteData = docSnap.data();
-    const { quoteNumber, customer_info, services, global_discount } = quoteData;
+    // let newquoteNumber: number;
+
+    const { customer_info, services, global_discount } = quoteData;
+    // if (typeof quoteNumber === "undefined") {
+
+    const quoteNumber = await getNextCotizacionNumber();
+
+    // }
 
     const totalNet = services.reduce((sum, service) => {
       return (
@@ -32,7 +40,6 @@ export default async function handler(
       );
     }, 0);
 
-    console.log({ quoteNumber, customer_info, services , global_discount});
     // Generar el PDF
     const pdfBlob = generatePdf(
       quoteNumber,
@@ -46,7 +53,10 @@ export default async function handler(
     await sendEmailWithQuote(customer_info, services, totalNet, pdfBlob);
 
     // Actualizar el estado de la cotización (opcional)
-    res.status(200).json({ message: "Cotización enviada con éxito" });
+    res.status(200).json({
+      message: "Cotización enviada con éxito",
+      quoteNumber,
+    });
   } catch (error) {
     console.error("❌ Error al enviar la cotización:", error);
     res.status(500).json({ message: "Error al enviar la cotización", error });

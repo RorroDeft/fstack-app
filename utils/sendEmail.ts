@@ -13,7 +13,6 @@ export const sendEmailWithQuote = async (
   const iva = totalNet * 0.19;
   const totalBruto = totalNet + iva;
 
-
   const pdfBuffer = Buffer.from(await pdfBlob.arrayBuffer());
 
   console.log(process.env.NEXT_PUBLIC_SMTP_HOST);
@@ -32,12 +31,13 @@ export const sendEmailWithQuote = async (
   const mailOptions = {
     from: '"Karina de F-Stack " <no-reply@fstack.cl>', // Dirección "de"
     to: customerInfo.email, // Dirección del cliente
+    cc: "rodriigo.madrid@gmail.com",
     subject: "Cotización de Servicios - F-Stack",
     text: `Hola ${customerInfo.name},
 
 Gracias por confiar en F-Stack. Aquí tienes la cotización solicitada para tu vehículo:
     
-- Total Bruto (IVA Incluido): $${totalBruto.toLocaleString()} CLP.
+- Total Bruto (IVA Incluido): $${totalBruto.toLocaleString("es-CL")} CLP.
 
 Adjunto encontrarás un PDF con el detalle completo de los servicios y precios.
 

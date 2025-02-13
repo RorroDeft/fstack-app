@@ -1,28 +1,29 @@
-import { db } from "../firebase/firebaseConfig";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import db from "../firebase/firebaseAdmin"; // Ajusta la ruta según tu estructura
 
 export const getNextCotizacionNumber = async () => {
   try {
     // Obtener el documento de configuración
-    const configDocRef = doc(db, "config", "quotes");
-    const docSnap = await getDoc(configDocRef);
+    const configDocRef = db.doc("config/quotes");
+     const docSnap = await configDocRef.get();
 
-    if (docSnap.exists()) {
-      // Si existe el documento, obtén el contador actual
-      const currentCounter = docSnap.data().quotesCounter;
-
-      // Incrementar el contador
-      const newCounter = currentCounter + 1;
-
+    let newCounter: number;
+    if (docSnap.exists) {
+      const data = docSnap.data();
+     // Verificar que quotesCounter exista y sea un número; de lo contrario, usar 1000
+      const currentCounter =
+        data && typeof data.quotesCounter === "number"
+          ? data.quotesCounter
+          : 1000;
+      newCounter = currentCounter + 1;
       // Actualizar el contador en Firestore
-      await updateDoc(configDocRef, { quotesCounter: newCounter });
-
-      return newCounter; // Retornar el número de cotización
+      await configDocRef.update({ quotesCounter: newCounter });
     } else {
-      // Si no existe, creamos el documento inicial con el primer número
-      await updateDoc(configDocRef, { quotesCounter: 1001 });
-      return 1001; // Número inicial de cotización
+      // Si el documento no existe, lo creamos con el primer número
+      newCounter = 1001;
+      await configDocRef.set({ quotesCounter: newCounter });
     }
+
+    return newCounter; // Retornar el número de cotización
   } catch (error) {
     console.error(
       "Error al obtener o actualizar el número de cotización:",

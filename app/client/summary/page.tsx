@@ -61,7 +61,6 @@ export default function SummaryPage() {
       note: "", // Opcional
       status: "pending", // 🔥 Inicialmente "pendiente"
     };
-    console.log(quoteData);
 
     try {
       const response = await fetch("/api/saveQuote", {
@@ -71,7 +70,6 @@ export default function SummaryPage() {
       });
 
       const data = await response.json();
-      console.log(data);
       if (data.success) {
         console.log("✅ Cotización guardada con ID:", data.id);
 

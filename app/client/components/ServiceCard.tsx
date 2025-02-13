@@ -6,6 +6,8 @@ export default function ServiceCard({ service }: { service: any }) {
   const router = useRouter();
   const { cart } = useQuote();
   const isAdded = cart.some((s) => s.id === service.id);
+
+  console.log(cart);
   return (
     <div className="bg-gray-800 p-4 rounded shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg">
       <img

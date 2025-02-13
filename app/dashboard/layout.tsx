@@ -1,23 +1,23 @@
 "use client";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { auth } from "../../firebase/firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const user = auth.currentUser;
+    // Se suscribe a los cambios en el estado de autenticación
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Si no hay usuario autenticado, redirige al login
+        router.push("/login");
+      }
+    });
 
-      // if (!user) {
-      //   // Si no hay usuario autenticado, redirige al login
-      //   router.push("/login");
-      // }
-    };
-
-    checkAuth();
+    // Limpia la suscripción al desmontar el componente
+    return () => unsubscribe();
   }, [router]);
 
   return (

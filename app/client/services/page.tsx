@@ -17,7 +17,6 @@ export default function ServicesPage() {
       const fetchVehicleData = () => {
         const storedVehicleData = localStorage.getItem("vehicleFormData");
         console.log("Datos cargados desde localStorage:", storedVehicleData);
-        console.log(storedVehicleData);
         if (storedVehicleData) {
           setVehicleData(JSON.parse(storedVehicleData));
         }

@@ -46,10 +46,7 @@ export function QuoteProvider({ children }: { children: React.ReactNode }) {
   // ✅ Función para obtener el precio correcto según el vehículo
   const getPriceForVehicle = (serviceId: string) => {
     const vehicle = getVehicleData();
-    console.log(vehicle);
     const service = services.find((s) => s.id === serviceId);
-    console.log(vehicle);
-    console.log(service);
     if (!service) return 0;
 
     // Si el servicio tiene precios por tamaño de auto
