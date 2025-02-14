@@ -2,7 +2,14 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { db } from "../../../../firebase/firebaseConfig";
-import { doc, onSnapshot, updateDoc, collection, addDoc, arrayUnion } from "firebase/firestore";
+import {
+  doc,
+  onSnapshot,
+  updateDoc,
+  collection,
+  addDoc,
+  arrayUnion,
+} from "firebase/firestore";
 
 export default function QuoteDetailsPage() {
   const { id } = useParams();
@@ -13,6 +20,7 @@ export default function QuoteDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [globalDiscount, setGlobalDiscount] = useState<number>(0);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   useEffect(() => {
     const docRef = doc(db, "quotes", id as string);
@@ -195,6 +203,12 @@ export default function QuoteDetailsPage() {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedImage(e.target.files[0]);
+    }
+  };
+
   const handleSendQuote = async () => {
     // Validación adicional para cambios sin guardar
     if (hasUnsavedChanges) {
@@ -212,14 +226,25 @@ export default function QuoteDetailsPage() {
       return;
     }
 
+
+    const formData = new FormData();
+
+    formData.append("quoteId", id);
+    // Agregar otros campos necesarios...
+    if (selectedImage) {
+      formData.append("image", selectedImage);
+    }
+
+    for (const [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+
+
     try {
       setLoading(true);
       const response = await fetch("/api/send-quote", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ quoteId: id }),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -238,7 +263,6 @@ export default function QuoteDetailsPage() {
         quoteNumber,
         globalDiscount,
       });
-
     } catch (error) {
       console.error("❌ Error al enviar la cotización:", error);
       alert("Hubo un error al enviar la cotización. Inténtalo nuevamente.");
@@ -399,7 +423,24 @@ export default function QuoteDetailsPage() {
             )}
           </ul>
         </div>
-
+        <div className="mt-4">
+          <label className="block text-white font-bold mb-2">
+            Adjuntar Imagen (opcional):
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="text-white"
+          />
+          {selectedImage && (
+            <div className="mt-2">
+              <p className="text-white">
+                Imagen seleccionada: {selectedImage.name}
+              </p>
+            </div>
+          )}
+        </div>
         <div className="mt-4">
           <p>
             <strong>Subtotal:</strong> $
