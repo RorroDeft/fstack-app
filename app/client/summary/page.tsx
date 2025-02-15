@@ -36,8 +36,19 @@ export default function SummaryPage() {
   }, [cart, router, loading]);
 
   // ✅ Maneja la selección de una opción
-  const handleOptionSelect = async () => {
+  const handleOptionSelect = async (action: string) => {
     setLoading(true); // ⏳ Activa el Loader
+
+    const currentDateTime = new Date().toLocaleString("es-CL", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+    const noteWithTimestamp = `${currentDateTime} ${action}`;
 
     // 📌 Estructurar la cotización para enviarla a la API
     const quoteData = {
@@ -48,7 +59,7 @@ export default function SummaryPage() {
         name: vehicleData.name,
         phone: vehicleData.phone,
         email: vehicleData.email,
-        vehicleType: vehicleData.vehicleType
+        vehicleType: vehicleData.vehicleType,
       },
       services: cart.map((service) => ({
         id: service.id,
@@ -58,7 +69,7 @@ export default function SummaryPage() {
         quantity: service.quantity,
       })),
       global_discount: 0, // Se puede ajustar en el futuro
-      note: "", // Opcional
+      notes: [noteWithTimestamp],
       status: "pending", // 🔥 Inicialmente "pendiente"
     };
 
@@ -160,7 +171,7 @@ export default function SummaryPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <button
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg"
-              onClick={handleOptionSelect}
+              onClick={() => handleOptionSelect("Recibir Cotización Formal")}
               disabled={loading} // 🔒 Deshabilita mientras carga
             >
               📩 Recibir Cotización Formal
@@ -168,7 +179,7 @@ export default function SummaryPage() {
 
             <button
               className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg"
-              onClick={handleOptionSelect}
+              onClick={() => handleOptionSelect("Hablar con un Asesor")}
               disabled={loading}
             >
               📞 Hablar con un Asesor
@@ -176,7 +187,7 @@ export default function SummaryPage() {
 
             <button
               className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg"
-              onClick={handleOptionSelect}
+              onClick={() => handleOptionSelect("Agendar Instalación")}
               disabled={loading}
             >
               🛠️ Agendar Instalación

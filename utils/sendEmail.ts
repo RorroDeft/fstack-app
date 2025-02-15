@@ -1,16 +1,19 @@
 import nodemailer from "nodemailer";
-import * as dotenv from "dotenv";
+// import * as dotenv from "dotenv";
 
-// Cargar el archivo .env.local manualmente
-dotenv.config({ path: ".env.local" });
+// // Cargar el archivo .env.local manualmente
+// dotenv.config({ path: ".env.local" });
 
 export const sendEmailWithQuote = async (
   customerInfo: any,
   services: any[],
   totalNet: number,
   pdfBlob: any,
-  imageBuffer?: Buffer,
-  imageFilename?: string
+  imageAttachments: Array<{
+    buffer: Buffer;
+    filename: string;
+    mimetype?: string;
+  }> = [] // valor por defecto vacío
 ) => {
   // Calcular IVA y total bruto
   const iva = totalNet * 0.19;
@@ -21,12 +24,12 @@ export const sendEmailWithQuote = async (
 
   // Configurar el transporte SMTP
   const transporter = nodemailer.createTransport({
-    host: process.env.NEXT_PUBLIC_SMTP_HOST,
-    port: Number(process.env.NEXT_PUBLIC_SMTP_PORT),
-    secure: process.env.NEXT_PUBLIC_SMTP_PORT === "465", // true si el puerto es 465
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: process.env.SMTP_PORT === "465", // true si el puerto es 465
     auth: {
-      user: process.env.NEXT_PUBLIC_SMTP_USER,
-      pass: process.env.NEXT_PUBLIC_SMTP_PASS,
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
     },
   });
 
@@ -38,22 +41,20 @@ export const sendEmailWithQuote = async (
       contentType: "application/pdf",
     },
   ];
-
   // Si se ha enviado una imagen, agregarla al array de attachments
-  if (imageBuffer && imageFilename) {
+  imageAttachments.forEach((img) => {
     attachments.push({
-      filename: imageFilename,
-      content: imageBuffer,
-      // Puedes ajustar el contentType según el tipo de imagen (p.ej. "image/png" o "image/jpeg")
-      contentType: "image/jpeg",
+      filename: img.filename,
+      content: img.buffer,
+      contentType: img.mimetype, // se establece según lo recibido
     });
-  }
+  });
 
   // Configurar el correo
   const mailOptions = {
-    from: '"Karina de F-Stack " <no-reply@fstack.cl>', // Dirección "de"
+    from: '"Karina de F-Stack " <karinafernandez@fstack.cl>', // Dirección "de"
     to: customerInfo.email, // Dirección del cliente
-    cc: "rodriigo.madrid@gmail.com",
+    cc: process.env.CC_EMAIL,
     subject: "Cotización de Servicios - F-Stack",
     text: `Hola ${customerInfo.name},
 

@@ -20,7 +20,7 @@ export default function QuoteDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [globalDiscount, setGlobalDiscount] = useState<number>(0);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   useEffect(() => {
     const docRef = doc(db, "quotes", id as string);
@@ -204,8 +204,10 @@ export default function QuoteDetailsPage() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedImage(e.target.files[0]);
+    if (e.target.files) {
+      // Convertir FileList a Array
+      const filesArray = Array.from(e.target.files);
+      setSelectedImages(filesArray);
     }
   };
 
@@ -226,20 +228,15 @@ export default function QuoteDetailsPage() {
       return;
     }
 
-
     const formData = new FormData();
 
     formData.append("quoteId", id);
-    // Agregar otros campos necesarios...
-    if (selectedImage) {
-      formData.append("image", selectedImage);
+
+    if (selectedImages && selectedImages.length > 0) {
+      selectedImages.forEach((file) => {
+        formData.append("image", file);
+      });
     }
-
-    for (const [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
-
-
     try {
       setLoading(true);
       const response = await fetch("/api/send-quote", {
@@ -430,14 +427,17 @@ export default function QuoteDetailsPage() {
           <input
             type="file"
             accept="image/*"
+            multiple // Permite seleccionar varios archivos
             onChange={handleFileChange}
             className="text-white"
           />
-          {selectedImage && (
+          {selectedImages && selectedImages.length > 0 && (
             <div className="mt-2">
-              <p className="text-white">
-                Imagen seleccionada: {selectedImage.name}
-              </p>
+              {selectedImages.map((file, index) => (
+                <p key={index} className="text-white">
+                  Imagen seleccionada: {file.name}
+                </p>
+              ))}
             </div>
           )}
         </div>

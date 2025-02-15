@@ -11,7 +11,8 @@ export default async function handler(
   }
 
   try {
-    const { customer_info, services, global_discount, note, status } = req.body;
+    const { customer_info, services, global_discount, notes, status } =
+      req.body;
 
     // Validación básica
     if (!customer_info || !services || services.length === 0) {
@@ -25,7 +26,7 @@ export default async function handler(
       customer_info,
       services,
       global_discount: global_discount || 0, // Si no hay descuento, usa 0
-      note: note || "", // Si no hay nota, usa un string vacío
+      notes, // Si no hay nota, usa un string vacío
       status: status || "pending", // Si no hay estado, se marca como "pending"
       created_at: serverTimestamp(), // 🔥 Guarda la fecha de creación automáticamente
     });

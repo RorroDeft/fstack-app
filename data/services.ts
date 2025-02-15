@@ -259,14 +259,6 @@ export const services = [
     base_price: 18000,
     adjusted_price: 0,
     quantity: 4,
-    size_price: {
-      "Sedan/Hatchback": 8000,
-      SUV: 8000,
-      "Pickup / 3 Corridas de asientos": 8000,
-      "Pickup XL": 8000,
-      Musclecar: 8000,
-      "Coupé/Deportivo": 8000,
-    },
     video: "https://www.youtube.com/embed/HsiwVTwisYo",
   },
 ];
