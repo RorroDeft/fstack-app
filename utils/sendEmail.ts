@@ -1,9 +1,12 @@
 import nodemailer from "nodemailer";
 
 export const sendEmailWithQuote = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   customerInfo: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   services: any[],
   totalNet: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   pdfBlob: any,
   imageAttachments: Array<{
     buffer: Buffer;
@@ -42,7 +45,7 @@ export const sendEmailWithQuote = async (
     attachments.push({
       filename: img.filename,
       content: img.buffer,
-      contentType: img.mimetype, // se establece según lo recibido
+      contentType: img.mimetype || "application/octet-stream",
     });
   });
 

@@ -11,9 +11,27 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 
+type VehicleType =
+  | "Sedan/Hatchback"
+  | "SUV"
+  | "Pickup / 3 Corridas de asientos"
+  | "Pickup XL"
+  | "Musclecar"
+  | "Coupé/Deportivo";
+interface Service {
+  id: string;
+  name: string;
+  base_price: number;
+  adjusted_price: number;
+  size_price?: Record<VehicleType, number>;
+  quantity: number;
+  image?: string;
+}
+
 export default function QuoteDetailsPage() {
-  const { id } = useParams();
+  const { id } = useParams() as { id: string };
   const router = useRouter();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [quote, setQuote] = useState<any>(null);
   const [note, setNote] = useState<string>(""); // Campo para la nota
   const [newService, setNewService] = useState({ name: "", price: 0 }); // Estado para el nuevo ítem
@@ -54,7 +72,7 @@ export default function QuoteDetailsPage() {
     if (!quote || !quote.services) {
       return { subtotal: 0, total: 0, iva: 0, toPay: 0 };
     }
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const subtotal = quote.services.reduce((acc: number, service: any) => {
       return (
         acc +
@@ -70,6 +88,7 @@ export default function QuoteDetailsPage() {
   };
 
   // Función para registrar logs en Firestore
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const logAction = async (action: string, details: any) => {
     try {
       const logRef = collection(db, "logs");
@@ -86,8 +105,10 @@ export default function QuoteDetailsPage() {
   };
 
   const handlePriceChange = (serviceId: string, newPrice: number) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setQuote((prevQuote: any) => ({
       ...prevQuote,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       services: prevQuote.services.map((service: any) =>
         service.id === serviceId
           ? { ...service, adjusted_price: newPrice }
@@ -97,8 +118,10 @@ export default function QuoteDetailsPage() {
   };
 
   const handleQuantityChange = (serviceId: string, newQuantity: number) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setQuote((prevQuote: any) => ({
       ...prevQuote,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       services: prevQuote.services.map((service: any) =>
         service.id === serviceId
           ? { ...service, quantity: newQuantity === 0 ? 1 : newQuantity }
@@ -124,6 +147,7 @@ export default function QuoteDetailsPage() {
     const updatedServices = [...(quote?.services || []), newServiceItem];
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setQuote((prevQuote: any) => ({
         ...prevQuote,
         services: updatedServices,
@@ -149,10 +173,12 @@ export default function QuoteDetailsPage() {
     }
 
     const updatedServices = quote.services.filter(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (service: any) => service.id !== serviceId
     );
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setQuote((prevQuote: any) => ({
         ...prevQuote,
         services: updatedServices,
@@ -305,7 +331,7 @@ export default function QuoteDetailsPage() {
             </tr>
           </thead>
           <tbody>
-            {quote.services.map((service: any) => (
+            {quote.services.map((service: Service) => (
               <tr key={service.id}>
                 <td>{service.name}</td>
                 <td>${service.base_price}</td>
@@ -410,7 +436,8 @@ export default function QuoteDetailsPage() {
           </label>
           <ul className="bg-gray-800 p-4 rounded text-white">
             {quote.notes && quote.notes.length > 0 ? (
-              quote.notes.map((noteItem, index) => (
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              quote.notes.map((noteItem: any, index: any) => (
                 <li key={index} className="mb-2">
                   {noteItem}
                 </li>

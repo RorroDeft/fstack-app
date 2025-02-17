@@ -1,11 +1,25 @@
 import { useState } from "react";
 
-export default function QuoteDetails({ quote }) {
-  const [prices, setPrices] = useState(quote.services);
+export interface Service {
+  id: string;
+  name: string;
+  base_price: number;
+  adjusted_price?: number;
+  // Puedes agregar otras propiedades que necesites, por ejemplo:
+  // quantity?: number;
+  // description?: string;
+  // image?: string;
+}
 
-  const handlePriceChange = (serviceId, newPrice) => {
-    setPrices((prev) =>
-      prev.map((service) =>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function QuoteDetails({ quote }: any) {
+  const [prices, setPrices] = useState(quote.services);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handlePriceChange = (serviceId: any, newPrice: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setPrices((prev: any) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      prev.map((service: any) =>
         service.id === serviceId
           ? { ...service, adjusted_price: newPrice }
           : service
@@ -32,7 +46,7 @@ export default function QuoteDetails({ quote }) {
             </tr>
           </thead>
           <tbody>
-            {prices.map((service) => (
+            {prices.map((service: Service) => (
               <tr key={service.id}>
                 <td>{service.name}</td>
                 <td>{service.base_price}</td>

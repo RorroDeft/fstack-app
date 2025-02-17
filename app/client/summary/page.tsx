@@ -2,12 +2,20 @@
 import { useEffect, useState } from "react";
 import { useQuote } from "../../context/QuoteContext";
 import { useRouter } from "next/navigation";
+interface Service {
+  id: string;
+  base_price: number;
+  quantity: number;
+  name: string;
+  // otras propiedades...
+}
 
 export default function SummaryPage() {
   const { cart, clearQuote } = useQuote();
   const router = useRouter();
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false); // 🔄 Estado del Loader
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [vehicleData, setVehicleData] = useState<any>(null);
 
   useEffect(() => {
@@ -22,7 +30,8 @@ export default function SummaryPage() {
   // ✅ Calcular el total de la cotización al cargar la página
   useEffect(() => {
     const totalPrice = cart.reduce(
-      (sum, service) => sum + service.base_price * service.quantity,
+      (sum: number, service: Service) =>
+        sum + service.base_price * service.quantity,
       0
     );
     setTotal(totalPrice);
@@ -61,7 +70,7 @@ export default function SummaryPage() {
         email: vehicleData.email,
         vehicleType: vehicleData.vehicleType,
       },
-      services: cart.map((service) => ({
+      services: cart.map((service: Service) => ({
         id: service.id,
         name: service.name,
         base_price: service.base_price,
@@ -119,7 +128,7 @@ export default function SummaryPage() {
 
             {/* ✅ Mobile → Tarjetas individuales */}
             <div className="space-y-4">
-              {cart.map((service) => (
+              {cart.map((service: Service) => (
                 <div
                   key={service.id}
                   className="bg-gray-700 p-4 rounded-lg shadow"

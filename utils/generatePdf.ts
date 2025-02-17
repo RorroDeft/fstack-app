@@ -4,7 +4,9 @@ import { logoBase64 } from "./global";
 
 export const generatePdf = (
   quoteNumber: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   customerInfo: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   services: any[],
   totalNet: number,
   global_discount: number
@@ -69,6 +71,7 @@ export const generatePdf = (
   });
 
   // Totales
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const finalY = (doc as any).lastAutoTable.finalY + 10; // Obtener posición final de la tabla
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");

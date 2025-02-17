@@ -1,16 +1,23 @@
 "use client";
 import { createContext, useContext, useState, useEffect } from "react";
 import { services } from "../../data/services";
-
+type VehicleType =
+  | "Sedan/Hatchback"
+  | "SUV"
+  | "Pickup / 3 Corridas de asientos"
+  | "Pickup XL"
+  | "Musclecar"
+  | "Coupé/Deportivo";
 interface Service {
   id: string;
   name: string;
   base_price: number;
   adjusted_price: number;
+  size_price?: Record<VehicleType, number>;
   quantity: number;
   image?: string;
 }
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const QuoteContext = createContext<any>(null);
 
 export function QuoteProvider({ children }: { children: React.ReactNode }) {
@@ -51,7 +58,11 @@ export function QuoteProvider({ children }: { children: React.ReactNode }) {
 
     // Si el servicio tiene precios por tamaño de auto
     if (service.size_price && vehicle.vehicleType) {
-      return service.size_price[vehicle.vehicleType] || service.base_price;
+      return (
+        service.size_price[
+          vehicle.vehicleType as keyof typeof service.size_price
+        ] || service.base_price
+      );
     }
 
     return service.base_price; // Fallback al precio base

@@ -6,9 +6,13 @@ import { services } from "@/data/services";
 import ServiceCard from "../components/ServiceCard";
 import QuoteButton from "../components/QuoteButton";
 import { useQuote } from "../../context/QuoteContext";
-
+interface Service {
+  id: string;
+  // otras propiedades según corresponda...
+}
 export default function ServicesPage() {
   const [activeCategory, setActiveCategory] = useState<string>("all"); // 🔹 "all" por defecto
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [vehicleData, setVehicleData] = useState<any>(null); // 🚗 Datos del auto ingresado
   const { cart } = useQuote();
 
@@ -140,7 +144,9 @@ export default function ServicesPage() {
                   <ServiceCard
                     key={service.id}
                     service={service}
-                    addedToQuote={cart.some((s) => s.id === service.id)}
+                    addedToQuote={cart.some(
+                      (s: Service) => s.id === service.id
+                    )}
                   />
                 ))}
               </div>

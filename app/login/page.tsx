@@ -27,6 +27,7 @@ export default function Login() {
       // await signInWithEmailAndPassword(auth, email, password);
       console.log("Login exitoso");
       router.push("/dashboard"); // Redirige al Dashboard
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Login error:", error.message);
       alert(`Error al iniciar sesión: ${error.message}`);

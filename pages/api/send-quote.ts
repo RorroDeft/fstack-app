@@ -54,6 +54,7 @@ export default async function handler(
           const quoteNumber = await getNextCotizacionNumber();
 
           // Calcular total neto
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const totalNet = services.reduce((sum: number, service: any) => {
             return (
               sum +
@@ -82,7 +83,8 @@ export default async function handler(
               : [files.image];
             imageFiles.forEach((file) => {
               const buffer = fs.readFileSync(file.filepath);
-              const filename = file.originalFilename;
+              // Se proporciona un valor por defecto si originalFilename es null
+              const filename = file.originalFilename ?? "imagen-sin-nombre.jpg";
               const mimetype = file.mimetype || "application/octet-stream";
               imageAttachments.push({ buffer, filename, mimetype });
             });
@@ -113,6 +115,7 @@ export default async function handler(
       });
     });
   } catch (error) {
+    console.log(error);
     // La respuesta ya se envió en el callback, solo se captura el error aquí.
     return;
   }
