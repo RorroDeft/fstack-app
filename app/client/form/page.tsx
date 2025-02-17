@@ -23,12 +23,14 @@ export default function VehicleFormPage() {
     phone: false,
     year: false,
   });
-
+  
   const vehicleTypes = [
     "Sedan/Hatchback",
     "SUV",
-    "Pickup/3 Corridas de Asientos",
+    "Pickup / 3 Corridas de asientos",
+    "Pickup XL",
     "Musclecar",
+    "Coupé/Deportivo",
   ];
 
   useEffect(() => {
@@ -80,6 +82,7 @@ export default function VehicleFormPage() {
     if (isFormValid) {
       console.log("✅ Formulario enviado con éxito:", formData);
       localStorage.setItem("vehicleFormData", JSON.stringify(formData));
+      document.cookie = "formPassed=true; path=/; max-age=1800";
       router.push("/client/services");
     } else {
       alert("❌ Por favor, revisa los campos.");

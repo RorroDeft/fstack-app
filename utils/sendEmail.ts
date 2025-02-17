@@ -1,59 +1,75 @@
 import nodemailer from "nodemailer";
-import * as dotenv from "dotenv";
 
-// Cargar el archivo .env.local manualmente
-dotenv.config({ path: ".env.local" });
 export const sendEmailWithQuote = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   customerInfo: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   services: any[],
   totalNet: number,
-  pdfBlob: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  pdfBlob: any,
+  imageAttachments: Array<{
+    buffer: Buffer;
+    filename: string;
+    mimetype?: string;
+  }> = [] // valor por defecto vacío
 ) => {
-  // Calcular IVA y bruto
+  // Calcular IVA y total bruto
   const iva = totalNet * 0.19;
   const totalBruto = totalNet + iva;
 
-
+  // Convertir el PDF Blob a Buffer
   const pdfBuffer = Buffer.from(await pdfBlob.arrayBuffer());
 
-  console.log(process.env.NEXT_PUBLIC_SMTP_HOST);
-  // Configurar transporte con tu servidor SMTP
+  // Configurar el transporte SMTP
   const transporter = nodemailer.createTransport({
-    host: process.env.NEXT_PUBLIC_SMTP_HOST,
-    port: Number(process.env.NEXT_PUBLIC_SMTP_PORT),
-    secure: process.env.NEXT_PUBLIC_SMTP_PORT === "465", // true si el puerto es 465
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: process.env.SMTP_PORT === "465", // true si el puerto es 465
     auth: {
-      user: process.env.NEXT_PUBLIC_SMTP_USER,
-      pass: process.env.NEXT_PUBLIC_SMTP_PASS,
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
     },
   });
 
-  // Configurar correo
+  // Construir los attachments: el PDF siempre se adjunta
+  const attachments = [
+    {
+      filename: "Cotizacion-FStack.pdf",
+      content: pdfBuffer,
+      contentType: "application/pdf",
+    },
+  ];
+  // Si se ha enviado una imagen, agregarla al array de attachments
+  imageAttachments.forEach((img) => {
+    attachments.push({
+      filename: img.filename,
+      content: img.buffer,
+      contentType: img.mimetype || "application/octet-stream",
+    });
+  });
+
+  // Configurar el correo
   const mailOptions = {
-    from: '"Karina de F-Stack " <no-reply@fstack.cl>', // Dirección "de"
+    from: '"Karina de F-Stack " <karinafernandez@fstack.cl>', // Dirección "de"
     to: customerInfo.email, // Dirección del cliente
+    cc: process.env.CC_EMAIL,
     subject: "Cotización de Servicios - F-Stack",
     text: `Hola ${customerInfo.name},
 
 Gracias por confiar en F-Stack. Aquí tienes la cotización solicitada para tu vehículo:
     
-- Total Bruto (IVA Incluido): $${totalBruto.toLocaleString()} CLP.
+- Total Bruto (IVA Incluido): $${totalBruto.toLocaleString("es-CL")} CLP.
 
 Adjunto encontrarás un PDF con el detalle completo de los servicios y precios.
 
 Saludos,
 El Equipo de F-Stack
 `,
-    attachments: [
-      {
-        filename: "Cotizacion-FStack.pdf",
-        content: pdfBuffer, // Buffer del PDF
-        contentType: "application/pdf",
-      },
-    ],
+    attachments,
   };
 
-  // Enviar correo
+  // Enviar el correo
   try {
     await transporter.sendMail(mailOptions);
     console.log("✅ Correo enviado con éxito.");

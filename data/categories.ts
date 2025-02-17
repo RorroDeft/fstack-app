@@ -1,9 +1,7 @@
 export const categories = [
-    { id: "all", name: "Todas las Categorías" },
-    { id: "interior", name: "Interior" },
-    { id: "exterior", name: "Exterior" },
-    // { id: "ceramic", name: "Tratamientos en Pintura" },
-    { id: "recommended", name: "Exclusivo para autos nuevos" },
-    { id: "restore", name: "Restaura tu auto" },
-  ];
-  
+  { id: "all", name: "Todas las Categorías" },
+  { id: "interior", name: "Protección Interior" }, // 🔹 Todos los autos
+  { id: "exterior", name: "Protección Exterior" }, // 🔹 Todos los autos
+  { id: "exclusive-2025", name: "Exclusivo 2025" }, // 🔥 Solo autos 2025
+  { id: "recommended", name: "Nuestras Recomendaciones" },
+];
