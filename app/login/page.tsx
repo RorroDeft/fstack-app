@@ -21,9 +21,9 @@ export default function Login() {
       await signInWithEmailAndPassword(
         auth,
         "fernandezmadrid.rodrigo@gmail.com",
-        "tuhermana1044"
+        "test123"
       );
-      document.cookie = "isLoggedIn=true; path=/; max-age=86400";
+      document.cookie = "isLoggedIn=true; path=/; max-age=1800";
       // await signInWithEmailAndPassword(auth, email, password);
       console.log("Login exitoso");
       router.push("/dashboard"); // Redirige al Dashboard

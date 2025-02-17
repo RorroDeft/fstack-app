@@ -1,8 +1,4 @@
 import nodemailer from "nodemailer";
-// import * as dotenv from "dotenv";
-
-// // Cargar el archivo .env.local manualmente
-// dotenv.config({ path: ".env.local" });
 
 export const sendEmailWithQuote = async (
   customerInfo: any,

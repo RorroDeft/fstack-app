@@ -82,7 +82,7 @@ export default function VehicleFormPage() {
     if (isFormValid) {
       console.log("✅ Formulario enviado con éxito:", formData);
       localStorage.setItem("vehicleFormData", JSON.stringify(formData));
-      document.cookie = "formPassed=true; path=/; max-age=86400";
+      document.cookie = "formPassed=true; path=/; max-age=1800";
       router.push("/client/services");
     } else {
       alert("❌ Por favor, revisa los campos.");
