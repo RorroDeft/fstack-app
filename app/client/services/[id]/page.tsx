@@ -1,21 +1,37 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react"; // ✅ Importamos React hooks
 import { services } from "@/data/services";
 import { useQuote } from "../../../context/QuoteContext";
-
+interface Service {
+  id: string;
+  // otras propiedades según corresponda...
+}
 export default function ServiceDetailsPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const [id, setId] = useState(""); // ✅ Estado para manejar `id` dinámico
   const router = useRouter();
   const { cart, addToQuote } = useQuote();
 
+  useEffect(() => {
+    if (params?.id) {
+      const idValue = Array.isArray(params.id) ? params.id[0] : params.id;
+      setId(idValue);
+    }
+  }, [params]);
+
+  if (!id) return null; // ✅ Evita renderizar antes de que `id` esté listo
+
+  // ✅ Buscar el servicio en la base de datos
   const service = services.find((s) => s.id === id);
   if (!service) return <p>Servicio no encontrado.</p>;
 
-  const isAdded = cart.some((s) => s.id === id);
+  // ✅ Verificar si el servicio ya está en la cotización
+  const isAdded = cart.some((s: Service) => s.id === id);
 
   const handleAddToQuote = () => {
     if (!isAdded) {
-      addToQuote(service);
+      addToQuote(service.id); // 🔥 Pasamos solo `id`
     }
   };
 
@@ -48,7 +64,10 @@ export default function ServiceDetailsPage() {
       </div>
 
       {/* Descripción */}
-      <p className="text-lg mb-6">{service.description}</p>
+      <div
+        className="text-lg mb-6"
+        dangerouslySetInnerHTML={{ __html: service.description }}
+      ></div>
 
       {/* Galería de Imágenes */}
       <div className="mb-6">

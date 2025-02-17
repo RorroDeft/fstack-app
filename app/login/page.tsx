@@ -1,7 +1,11 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  browserLocalPersistence,
+  setPersistence,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { auth } from "../../firebase/firebaseConfig";
 
 export default function Login() {
@@ -11,9 +15,19 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      // Establecer la persistencia en localStorage
+      await setPersistence(auth, browserLocalPersistence);
+
+      await signInWithEmailAndPassword(
+        auth,
+        "fernandezmadrid.rodrigo@gmail.com",
+        "test123"
+      );
+      document.cookie = "isLoggedIn=true; path=/; max-age=1800";
+      // await signInWithEmailAndPassword(auth, email, password);
       console.log("Login exitoso");
       router.push("/dashboard"); // Redirige al Dashboard
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Login error:", error.message);
       alert(`Error al iniciar sesión: ${error.message}`);

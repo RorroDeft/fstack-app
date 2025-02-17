@@ -1,7 +1,19 @@
 "use client";
 import { useState } from "react";
 
-export default function CategoryFilter({ categories, onSelectCategory }) {
+interface Category {
+  id: string;
+  name: string;
+}
+
+interface CategoryFilterProps {
+  categories: Category[];
+  onSelectCategory: (categoryId: string) => void;
+}
+export default function CategoryFilter({
+  categories,
+  onSelectCategory,
+}: CategoryFilterProps) {
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -10,14 +22,7 @@ export default function CategoryFilter({ categories, onSelectCategory }) {
       <div className="hidden md:block bg-gray-900 p-5 rounded-lg shadow-md">
         <h3 className="text-lg font-bold mb-3 text-white">Categorías</h3>
         <ul className="space-y-3">
-          <li>
-            {/* <button
-              onClick={() => onSelectCategory("all")}
-              className="block w-full text-left bg-gray-700 text-white px-5 py-2 rounded hover:bg-gray-600 transition duration-200"
-            >
-              Todas
-            </button> */}
-          </li>
+          <li></li>
           {categories.map((category) => (
             <li key={category.id}>
               <button

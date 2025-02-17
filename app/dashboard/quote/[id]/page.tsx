@@ -2,48 +2,77 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { db } from "../../../../firebase/firebaseConfig";
-import { doc, getDoc, updateDoc, collection, addDoc } from "firebase/firestore";
+import {
+  doc,
+  onSnapshot,
+  updateDoc,
+  collection,
+  addDoc,
+  arrayUnion,
+} from "firebase/firestore";
+
+type VehicleType =
+  | "Sedan/Hatchback"
+  | "SUV"
+  | "Pickup / 3 Corridas de asientos"
+  | "Pickup XL"
+  | "Musclecar"
+  | "Coupé/Deportivo";
+interface Service {
+  id: string;
+  name: string;
+  base_price: number;
+  adjusted_price: number;
+  size_price?: Record<VehicleType, number>;
+  quantity: number;
+  image?: string;
+}
 
 export default function QuoteDetailsPage() {
-  const { id } = useParams();
+  const { id } = useParams() as { id: string };
   const router = useRouter();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [quote, setQuote] = useState<any>(null);
   const [note, setNote] = useState<string>(""); // Campo para la nota
   const [newService, setNewService] = useState({ name: "", price: 0 }); // Estado para el nuevo ítem
   const [loading, setLoading] = useState(true);
   const [globalDiscount, setGlobalDiscount] = useState<number>(0);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   useEffect(() => {
-    const fetchQuote = async () => {
-      try {
-        const docRef = doc(db, "quotes", id as string);
-        const docSnap = await getDoc(docRef);
-
+    const docRef = doc(db, "quotes", id as string);
+    // onSnapshot actualiza automáticamente cada vez que el documento cambia
+    const unsubscribe = onSnapshot(
+      docRef,
+      (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           setQuote(data);
           setNote(data.note || "");
           setGlobalDiscount(data.global_discount || 0);
+          setLoading(false);
         } else {
           alert("La cotización no existe.");
           router.push("/dashboard");
         }
-      } catch (error) {
+      },
+      (error) => {
         console.error("Error al obtener la cotización:", error);
         alert("Hubo un problema al cargar la cotización.");
-      } finally {
         setLoading(false);
       }
-    };
+    );
 
-    fetchQuote();
-  }, [id]);
+    // Limpia la suscripción al desmontar el componente
+    return () => unsubscribe();
+  }, [id, router]);
 
   const calculateTotalWithDiscount = () => {
     if (!quote || !quote.services) {
       return { subtotal: 0, total: 0, iva: 0, toPay: 0 };
     }
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const subtotal = quote.services.reduce((acc: number, service: any) => {
       return (
         acc +
@@ -58,9 +87,28 @@ export default function QuoteDetailsPage() {
     return { subtotal, total, iva, toPay };
   };
 
+  // Función para registrar logs en Firestore
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const logAction = async (action: string, details: any) => {
+    try {
+      const logRef = collection(db, "logs");
+      await addDoc(logRef, {
+        idQuote: id,
+        action,
+        timestamp: new Date().toISOString(),
+        details,
+      });
+      console.log(`✅ Log registrado: ${action}`);
+    } catch (error) {
+      console.error("❌ Error al registrar log:", error);
+    }
+  };
+
   const handlePriceChange = (serviceId: string, newPrice: number) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setQuote((prevQuote: any) => ({
       ...prevQuote,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       services: prevQuote.services.map((service: any) =>
         service.id === serviceId
           ? { ...service, adjusted_price: newPrice }
@@ -70,16 +118,16 @@ export default function QuoteDetailsPage() {
   };
 
   const handleQuantityChange = (serviceId: string, newQuantity: number) => {
-    console.log(serviceId, newQuantity);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setQuote((prevQuote: any) => ({
       ...prevQuote,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       services: prevQuote.services.map((service: any) =>
         service.id === serviceId
           ? { ...service, quantity: newQuantity === 0 ? 1 : newQuantity }
           : service
       ),
     }));
-    console.log(quote);
   };
 
   const handleAddService = async () => {
@@ -99,6 +147,7 @@ export default function QuoteDetailsPage() {
     const updatedServices = [...(quote?.services || []), newServiceItem];
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setQuote((prevQuote: any) => ({
         ...prevQuote,
         services: updatedServices,
@@ -124,10 +173,12 @@ export default function QuoteDetailsPage() {
     }
 
     const updatedServices = quote.services.filter(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (service: any) => service.id !== serviceId
     );
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setQuote((prevQuote: any) => ({
         ...prevQuote,
         services: updatedServices,
@@ -146,29 +197,77 @@ export default function QuoteDetailsPage() {
   const handleSaveChanges = async () => {
     try {
       const docRef = doc(db, "quotes", id as string);
+      const currentDateTime = new Date().toLocaleString("es-CL", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+      const noteWithTimestamp = `${currentDateTime} ${note}`;
+
       await updateDoc(docRef, {
         services: quote.services,
         status: "Actualizada",
-        note,
+        // Agrega la nueva nota al array "notes"
+        notes: arrayUnion(noteWithTimestamp),
         global_discount: globalDiscount,
       });
-
       alert("Cambios guardados");
+      setHasUnsavedChanges(false);
+      await logAction("Guardar Cambios", {
+        customer: quote.customer_info,
+        services: quote.services,
+        note: noteWithTimestamp,
+        globalDiscount,
+      });
     } catch (error) {
       console.error("❌ Error al guardar cambios:", error);
       alert("Hubo un error al guardar los cambios.");
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      // Convertir FileList a Array
+      const filesArray = Array.from(e.target.files);
+      setSelectedImages(filesArray);
+    }
+  };
+
   const handleSendQuote = async () => {
+    // Validación adicional para cambios sin guardar
+    if (hasUnsavedChanges) {
+      alert(
+        "Existen cambios sin guardar. Por favor, guarda los cambios antes de enviar la cotización."
+      );
+      return;
+    }
+
+    // Mostrar ventana de confirmación
+    const isConfirmed = window.confirm(
+      "¿Está seguro que desea enviar la cotización?"
+    );
+    if (!isConfirmed) {
+      return;
+    }
+
+    const formData = new FormData();
+
+    formData.append("quoteId", id);
+
+    if (selectedImages && selectedImages.length > 0) {
+      selectedImages.forEach((file) => {
+        formData.append("image", file);
+      });
+    }
     try {
       setLoading(true);
       const response = await fetch("/api/send-quote", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ quoteId: id }),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -176,9 +275,17 @@ export default function QuoteDetailsPage() {
       }
 
       alert("✅ Cotización enviada con éxito");
-
+      const data = await response.json();
+      const { quoteNumber } = data;
       const docRef = doc(db, "quotes", id as string);
-      await updateDoc(docRef, { status: "Enviada" });
+      await updateDoc(docRef, { status: "Enviada", quoteNumber });
+      await logAction("Enviar Cotización", {
+        customer: quote.customer_info,
+        services: quote.services,
+        note,
+        quoteNumber,
+        globalDiscount,
+      });
     } catch (error) {
       console.error("❌ Error al enviar la cotización:", error);
       alert("Hubo un error al enviar la cotización. Inténtalo nuevamente.");
@@ -201,6 +308,17 @@ export default function QuoteDetailsPage() {
           <strong>Email:</strong> {quote.customer_info.email}
         </p>
 
+        <p>
+          <strong>Vehículo:</strong> {quote.customer_info.brand}{" "}
+          {quote.customer_info.model} ({quote.customer_info.year})
+        </p>
+        <p>
+          <strong>Tipo:</strong> {quote.customer_info.vehicleType}
+        </p>
+        <p>
+          <strong>Estado:</strong> {quote.status}
+        </p>
+
         <table className="table-auto w-full mt-4">
           <thead>
             <tr>
@@ -213,7 +331,7 @@ export default function QuoteDetailsPage() {
             </tr>
           </thead>
           <tbody>
-            {quote.services.map((service: any) => (
+            {quote.services.map((service: Service) => (
               <tr key={service.id}>
                 <td>{service.name}</td>
                 <td>${service.base_price}</td>
@@ -221,9 +339,10 @@ export default function QuoteDetailsPage() {
                   <input
                     type="number"
                     value={service.adjusted_price || service.base_price}
-                    onChange={(e) =>
-                      handlePriceChange(service.id, Number(e.target.value))
-                    }
+                    onChange={(e) => {
+                      handlePriceChange(service.id, Number(e.target.value));
+                      setHasUnsavedChanges(true);
+                    }}
                     className="w-full p-2 rounded bg-gray-700 text-white"
                   />
                 </td>
@@ -231,9 +350,10 @@ export default function QuoteDetailsPage() {
                   <input
                     type="number"
                     value={service.quantity || 1}
-                    onChange={(e) =>
-                      handleQuantityChange(service.id, Number(e.target.value))
-                    }
+                    onChange={(e) => {
+                      handleQuantityChange(service.id, Number(e.target.value));
+                      setHasUnsavedChanges(true);
+                    }}
                     className="w-full p-2 rounded bg-gray-700 text-white"
                   />
                 </td>
@@ -242,7 +362,7 @@ export default function QuoteDetailsPage() {
                   {(
                     (service.adjusted_price || service.base_price) *
                     (service.quantity || 1)
-                  ).toLocaleString()}
+                  ).toLocaleString("es-CL")}
                 </td>
                 <td>
                   <button
@@ -300,31 +420,74 @@ export default function QuoteDetailsPage() {
           </label>
           <textarea
             value={note}
-            onChange={(e) => setNote(e.target.value)}
+            onChange={(e) => {
+              setNote(e.target.value);
+              setHasUnsavedChanges(true);
+            }}
             className="w-full p-2 rounded bg-gray-700 text-white"
             placeholder="Escribe aquí una nota sobre el cliente..."
           />
         </div>
 
+        {/* Historial de notas */}
+        <div className="mt-4">
+          <label className="block text-white font-bold mb-2">
+            Historial de Notas:
+          </label>
+          <ul className="bg-gray-800 p-4 rounded text-white">
+            {quote.notes && quote.notes.length > 0 ? (
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              quote.notes.map((noteItem: any, index: any) => (
+                <li key={index} className="mb-2">
+                  {noteItem}
+                </li>
+              ))
+            ) : (
+              <li>No hay notas registradas.</li>
+            )}
+          </ul>
+        </div>
+        <div className="mt-4">
+          <label className="block text-white font-bold mb-2">
+            Adjuntar Imagen (opcional):
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            multiple // Permite seleccionar varios archivos
+            onChange={handleFileChange}
+            className="text-white"
+          />
+          {selectedImages && selectedImages.length > 0 && (
+            <div className="mt-2">
+              {selectedImages.map((file, index) => (
+                <p key={index} className="text-white">
+                  Imagen seleccionada: {file.name}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
         <div className="mt-4">
           <p>
             <strong>Subtotal:</strong> $
-            {calculateTotalWithDiscount().subtotal.toLocaleString()}
+            {calculateTotalWithDiscount().subtotal.toLocaleString("es-CL")}
           </p>
           <p>
-            <strong>Descuento:</strong> ${globalDiscount.toLocaleString()}
+            <strong>Descuento:</strong> $
+            {globalDiscount.toLocaleString("es-CL")}
           </p>
           <p>
             <strong>Total con Descuento:</strong> $
-            {calculateTotalWithDiscount().total.toLocaleString()}
+            {calculateTotalWithDiscount().total.toLocaleString("es-CL")}
           </p>
           <p>
             <strong>IVA (19%):</strong> $
-            {calculateTotalWithDiscount().iva.toLocaleString()}
+            {calculateTotalWithDiscount().iva.toLocaleString("es-CL")}
           </p>
           <p>
             <strong>A pagar:</strong> $
-            {calculateTotalWithDiscount().toPay.toLocaleString()}
+            {calculateTotalWithDiscount().toPay.toLocaleString("es-CL")}
           </p>
         </div>
         <div className="mt-4">
@@ -334,7 +497,10 @@ export default function QuoteDetailsPage() {
           <input
             type="number"
             value={globalDiscount}
-            onChange={(e) => setGlobalDiscount(Number(e.target.value))}
+            onChange={(e) => {
+              setGlobalDiscount(Number(e.target.value));
+              setHasUnsavedChanges(true);
+            }}
             className="w-full p-2 rounded bg-gray-700 text-white"
             placeholder="Ingrese un descuento"
           />
